@@ -270,29 +270,55 @@ func (n nodelist) String() string {
 func search(root factory) {
 	n := node{root, nil, nil}
 
-	count := 1
-	children := n.insert()
-	for {
-		fmt.Printf("Searching... %d\n", count)
+	//count := 1
+	//children := n.insert()
+	/*for {
+		fmt.Printf("Searching... %d", count)
+		fmt.Printf("...%d child\n", len(children))
 		for _, v := range children {
 			if v.this.Success() {
-				fmt.Println(v, count)
+				fmt.Println("finally", v, count)
 				return
 			}
 		}
 		children = spread(children)
-		fmt.Println(children)
+		//fmt.Println(children)
 		count++
+	}*/
+
+	ch := make(chan result, 1)
+	for _, v := range n.insert() {
+		go gosearch(v, ch, 0)
+	}
+
+	result := <-ch
+	fmt.Println(result.d)
+	fmt.Println(result.n)
+	return
+
+}
+
+func gosearch(n node, ch chan result, depth int) {
+	for _, v := range n.insert() {
+		if v.this.Success() {
+			ch <- result{v, depth}
+		}
+		go gosearch(v, ch, depth+1)
 	}
 }
 
-func spread(in []node) []node {
+/*func spread(in []node) []node {
 	out := make([]node, 0)
 
 	for _, v := range in {
 		out = append(out, v.insert()...)
 	}
 	return out
+}*/
+
+type result struct {
+	n node
+	d int
 }
 
 func main() {

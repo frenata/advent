@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
 func TestNewFactory(t *testing.T) {
 	f := NewFactory(4)
@@ -48,16 +45,11 @@ func TestClone(t *testing.T) {
 
 func TestExample(t *testing.T) {
 	f := sampleFactory()
-	t.Log(f)
+	/*t.Log(f)
 	t.Log(f.PossibleMoves())
-	t.Log(f.PossibleMoves()[0].PossibleMoves())
+	t.Log(f.PossibleMoves()[0].PossibleMoves())*/
 
 	//search(f)
-	root := node{f, nil, nil}
-	fmt.Println(root)
-	root.insert()
-	fmt.Println(root.children)
-
 	search(f)
 }
 
