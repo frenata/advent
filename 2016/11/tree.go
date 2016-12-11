@@ -202,7 +202,7 @@ func (f factory) PossibleMoves() []factory {
 			possible.addIfValid(f.Move(1, []tool{v, v2}))
 		}
 	}
-	//fmt.Println(len(possible.f))
+	fmt.Printf("possible moves %d for \n%s\n", len(possible.f), f)
 	return possible.f
 }
 
