@@ -237,7 +237,16 @@ func (n *node) insert() []node {
 	n.children = make([]node, 0)
 
 	for _, f := range n.this.PossibleMoves() {
-		if n.parent == nil || !n.parent.this.Equals(f) {
+		matches := false
+
+		gpa := n.parent
+		for gpa != nil && !matches {
+			if gpa.this.Equals(f) {
+				matches = true
+			}
+			gpa = gpa.parent
+		}
+		if !matches {
 			n.children = append(n.children, node{f, n, nil})
 		}
 	}
@@ -264,6 +273,7 @@ func search(root factory) {
 	count := 1
 	children := n.insert()
 	for {
+		fmt.Printf("Searching... %d\n", count)
 		for _, v := range children {
 			if v.this.Success() {
 				fmt.Println(v, count)
