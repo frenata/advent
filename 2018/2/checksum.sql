@@ -31,4 +31,38 @@ create view day2.star1 as
       where freqs = True) *
     (select count(*)
        from (select day2.freqs(id,3) from day2.boxes) as t
-      where freqs = True);
+      where freqs = True) as star1;
+
+create function day2.distance(x text, y text) returns int as
+$$
+  declare dist int = 0;
+  begin
+    for i in 1..char_length(x) loop
+      if not (substr(x, i, 1) = substr(y, i, 1)) then
+        dist = dist + 1;
+      end if;
+    end loop;
+    return dist;
+  end; $$ language plpgsql;
+
+create function day2.common(x text, y text) returns text as
+$$
+  declare z text = '';
+  begin
+    for i in 1..char_length(x) loop
+      if substr(x, i, 1) = substr(y, i, 1) then
+        z = z || substr(x,i,1);
+      end if;
+    end loop;
+    return z;
+  end; $$ language plpgsql;
+
+create view day2.star2 as
+  select day2.common(o.id, i.id) as star2
+    from day2.boxes o,
+         day2.boxes i
+   where day2.distance(o.id, i.id) = 1
+   limit 1;
+
+select * from day2.star1;
+select * from day2.star2;
