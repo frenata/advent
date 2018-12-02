@@ -1,0 +1,5 @@
+{:deps
+ {org.clojure/clojure {:mvn/version "1.10.0-alpha6"}
+  com.rpl/specter {:mvn/version "1.1.0"}
+  cheshire {:mvn/version "5.8.0"}}
+ }
