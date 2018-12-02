@@ -11,13 +11,10 @@ $$
 
 create function day2.freqs(inp text, target int) returns bool as
 $$
-  declare
-  found bool = false;
-  c text;
+  declare found bool = false;
   begin
-    foreach c in array array['a','b','c','d','e','f','g','h','i','j','k','l','m',
-                             'n','o','p','q','r','s','t','u','v','w','x','y','z'] loop
-      if day2.freq(inp, c)::int = target then
+    for c in 97..122 loop
+      if day2.freq(inp, chr(c))::int = target then
         found = true;
       end if;
     end loop;
