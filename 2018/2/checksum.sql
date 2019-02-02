@@ -1,8 +1,8 @@
-drop schema day2 cascade;
+drop schema if exists day2 cascade;
 create schema day2;
 
 create table day2.boxes (id text);
-copy day2.boxes from '/Users/frenata/src/advent/2018/2/input.txt';
+copy day2.boxes from '/home/frenata/src/advent/2018/2/input.txt';
 
 create function day2.freq(inp text, search text) returns bigint as
 $$
