@@ -36,7 +36,6 @@ jobs:
           command: |
             # notify Code Climate of a pending test report using `before-build`
             ./cc-test-reporter before-build
-            go test -v ./...
             go test -coverprofile c.out ./...
             # upload test report to Code Climate using `after-build`
             ./cc-test-reporter after-build --exit-code $?
