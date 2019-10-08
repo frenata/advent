@@ -72,7 +72,7 @@ func (a *assembler) assemble() map[string]int {
 
 func main() {
 	puzzle := []string{
-		"cpy 1 a",
+		"cpy  1 a",
 		"cpy 1 b",
 		"cpy 26 d",
 		"jnz c 2",
