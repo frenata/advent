@@ -30,8 +30,8 @@
     (<= low (or (freqs letter) 0) high)))
 
 (defn- xor [a b]
-  (and (or a b)
-       (not (and a b))))
+  (or (and a (not b))
+      (and (not a) b)))
 
 (defn valid-password-position? [low high letter password]
   (let [low (dec (Integer/parseInt low))
