@@ -3,34 +3,44 @@
             [clojure.pprint :as pp]
             [clojure.java.io :as io]))
 
-(defn read-lines [f]
+(def input "3/input.dat")
+
+(defn read-lines
+  "Open a file and read all the lines"
+  [f]
   (with-open [r (io/reader f)]
     (into [] (line-seq r))))
 
-(def input
-  (->> "3/input.dat"
-       read-lines))
+(defn text->hash-map 
+  "Reads a collection of lines into a hash-map from x,y coords to the value in the block."
+  ([lines] (text->hash-map identity lines))
+  ([f lines]
+   (->> lines 
+        (map-indexed (fn [y row]
+                       (->> row
+                            (map-indexed (fn [x cell] [[x y] (f cell)]))
+                            (apply concat))))
+        (apply concat)
+        (apply hash-map))))
 
-(def slope-map (->> input 
-     (map-indexed (fn [i row]
-                    (->> row
-                         (map-indexed (fn [j col] [[j i] (if (= \# col) 1 0)]))
-                         (apply concat))))
-     (apply concat)
-     (apply hash-map)))
-
-(defn count-trees [slope [right down]]
-  (let [bottom (second (apply max-key second (keys slope)))
-        wrap   (inc (first (apply max-key first (keys slope))))]
+(defn count-trees [[tree-map height width] [right down]]
     (loop [[x y] [0 0]
            hits  0]
-      (if (> y bottom)
+      (if (>= y height)
         hits
-        (recur [(mod (+ x right) wrap) (+ y down)]
-               (+ hits (slope [x y])))))))
+        (recur [(mod (+ x right) width) (+ y down)]
+               (+ hits (tree-map [x y]))))))
 
-(def star1 (count-trees slope-map [3 1]))
-(def star2 (apply * (map (partial count-trees slope-map) [[1 1] [3 1] [5 1] [7 1] [5 2]])))
+(def tree-map
+  (->> input
+       read-lines
+       ((juxt (partial text->hash-map #(if (= \# %) 1 0))
+              count
+              (comp count first)))))
+
+(def star1 (count-trees tree-map [3 1]))
+
+(def star2 (apply * (map (partial count-trees tree-map) [[1 1] [3 1] [5 1] [7 1] [5 2]])))
 
 #_(println star1 star2)
 
