@@ -54,3 +54,19 @@
 
 (assert (= star1 1528))
 (assert (= star2 640))
+
+(do
+  ;; Trying various performance optimizations
+  (def prog (->program input))
+  (def size (count prog))
+
+  ;; fastest when precomputing size
+  (time (some #(when (>= (first %) size) %) (map execute-program (permutate-program prog))))
+
+  ;; slowest but requires no pre-computation of size
+  (time (second (apply max-key first (map execute-program (permutate-program prog)))))
+
+  ;; slightly slower even when precomputing size
+  (time (reduce (fn [_ [pc acc]] (when (> pc size) (reduced acc))) nil (map execute-program (permutate-program prog))))
+
+  )
