@@ -19,5 +19,5 @@
         (recur (assoc record diff-record (take 2 (conj (record diff-record) round))) (inc round) diff-record)))))
 
 (recite [0 3 6] 2020)
-(println (recite [0 1 4 13 15 12 16] 2020))
-(println (recite [0 1 4 13 15 12 16] 30000000))
+(time (println (recite [0 1 4 13 15 12 16] 2020)))
+(time (println (recite [0 1 4 13 15 12 16] 30000000)))
