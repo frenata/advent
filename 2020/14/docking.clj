@@ -27,12 +27,10 @@
          (mapcat (fn [[addr val]] [addr (reduce (fn [acc f] (f acc)) val bits)]))
          (apply hash-map))))
 
-(defn float-addr [i addr] [(bit-set addr i) (bit-clear addr i)])
-
 (defn process-block-addrs [prog]
   (let [bits (->> (:mask prog)
                   str/reverse
-                  (map-indexed (fn [i x] (case x \X (partial float-addr i) \1 #(vector (bit-set % i)) nil)))
+                  (map-indexed (fn [i x] (case x \X #(vector (bit-set % i) (bit-clear % i)) \1 #(vector (bit-set % i)) nil)))
                   (filter some?))]
     (->> (:mems prog)
          (map (fn [[addr val]] [(reduce (fn [acc f] (mapcat f acc)) [addr] bits) val]))
