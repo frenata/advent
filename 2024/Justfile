@@ -1,3 +1,6 @@
+lint:
+	uv run ruff format
+
 example num:
 	uv run python {{num}}/puzzle{{num}}.py {{num}}/example.txt
 
