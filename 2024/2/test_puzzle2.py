@@ -11,6 +11,11 @@ def test_safe_tolerance():
     assert actual == 4
 
 
-def test_safe_tolerance_with_direction_errors():
+def test_safe_tolerance_with_fixable_direction_errors():
     actual = sut.safe("2/check.txt", 1)
     assert actual == 3
+
+
+def test_safe_tolerance_with_direction_errors():
+    actual = sut.safe("2/check_bad.txt", 1)
+    assert actual == 0
