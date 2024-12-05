@@ -1,3 +1,9 @@
+example num:
+	uv run python {{num}}/puzzle{{num}}.py {{num}}/example.txt
+
+challenge num:
+	uv run python {{num}}/puzzle{{num}}.py {{num}}/challenge.txt
+
 build:
 	devcontainer build --workspace-folder .
 
