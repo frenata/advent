@@ -6,15 +6,23 @@ import heapq
 
 def is_safe(nums, tolerance):
     dir = 1 if nums[1] > nums[0] else -1
+    dir2 = 1 if nums[2] > nums[1] else -1
+    without_first = False
+    if dir != dir2 and tolerance:
+        without_first = is_safe(nums[1:], 0)
+
     last = nums[0]
     for i, n in enumerate(nums[1:]):
-        print(nums, dir, last, n)
+        #print(nums, dir, last, n, i)
         if dir == 1 and n <= last:
-            return is_safe(nums[:i]+nums[i+1:], 0) if tolerance else False
+            #print(nums[:i+1], nums[i+2:])
+            return without_first or (is_safe(nums[:i+1]+nums[i+2:], 0) if tolerance else False)
         elif dir == -1 and n >= last:
-            return is_safe(nums[:i]+nums[i+1:], 0) if tolerance else False
+            #print(nums[:i+1], nums[i+2:])
+            return without_first or (is_safe(nums[:i+1]+nums[i+2:], 0) if tolerance else False)
         elif abs(n - last) > 3:
-            return is_safe(nums[:i]+nums[i+1:], 0) if tolerance else False
+            #print(nums[:i+1], nums[i+2:])
+            return without_first or (is_safe(nums[:i+1]+nums[i+2:], 0) if tolerance else False)
         last = n
 
     return True
