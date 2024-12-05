@@ -9,4 +9,3 @@ def test_search():
 def test_search_a():
     actual = sut.search("4/example.txt", sut.check_a)
     assert actual == 9
-
