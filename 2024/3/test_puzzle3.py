@@ -7,5 +7,5 @@ def test_multiply():
 
 
 def test_conditional_multiply():
-    actual = sut.conditional_multiply("3/example.txt")
+    actual = sut.multiply("3/example.txt", True)
     assert actual == 48
