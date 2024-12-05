@@ -7,7 +7,7 @@ def split(xs, line):
     l, r = line.split()
     return (left + [int(l)], right + [int(r)])
 
-def main(filename):
+def distance(filename):
     with open(filename) as f:
         left, right = functools.reduce(split, f, ([],[]))
 
@@ -22,4 +22,4 @@ def main(filename):
 
 
 if __name__ == "__main__":
-    print(main(sys.argv[1]))
+    print(distance(sys.argv[1]))
