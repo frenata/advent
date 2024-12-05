@@ -19,7 +19,7 @@ def is_ordered(g, pages):
     return True
 
 
-def order(filename):
+def extract(filename):
     with open(filename) as f:
         collect = "rules"
         rules = []
@@ -33,14 +33,28 @@ def order(filename):
             elif line != "\n":
                 pages.append(line[:-1].split(","))
 
-        #print(rules, pages)
+    return graph(rules), pages
 
-    rules = graph(rules)
-    # print(rules)
-    # print([is_ordered(rules, ps) for ps in pages])
-    ordered_pages = [page for page in pages if is_ordered(rules, page)]
-    return functools.reduce(lambda xs, y: xs + int(y[len(y) // 2]), ordered_pages, 0)
+
+def middles(pages):
+    return functools.reduce(lambda xs, y: xs + int(y[len(y) // 2]), pages, 0)
+
+
+def order(rules, pages):
+    def is_before(x, y):
+        if x == y:
+            return 0
+        elif y in rules[x]:
+            return -1
+        elif x in rules[y]:
+            return 1
+
+    return sorted(pages, key=functools.cmp_to_key(is_before))
 
 
 if __name__ == "__main__":
-    print(order(sys.argv[1]))
+    rules, pages = extract(sys.argv[1])
+    print(middles([page for page in pages if is_ordered(rules, page)]))
+    print(
+        middles([order(rules, page) for page in pages if not is_ordered(rules, page)])
+    )
