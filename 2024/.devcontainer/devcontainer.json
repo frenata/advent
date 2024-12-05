@@ -1,0 +1,15 @@
+{
+	"name": "python env",
+	"image": "base-python",
+	"remoteUser": "${localEnv:USER}",
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+
+	"features": {
+		"ghcr.io/nils-geistmann/devcontainers-features/create-remote-user:0": {},
+		"ghcr.io/duduribeiro/devcontainer-features/neovim:1": { "version": "nightly" }
+	},
+	"postCreateCommand": "bash /opt/scripts/post_create.sh",
+	"runArgs": ["--env-file","/home/frenata/.devcontainer.env"]
+}
