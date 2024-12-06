@@ -66,7 +66,7 @@ def simulate(start, obstacles, limits):
 
 if __name__ == "__main__":
     start, obstacles, limits = parse_map(sys.argv[1])
-    #print(start, obstacles, limits)
+    # print(start, obstacles, limits)
     visited, new_obstacles = simulate(start, obstacles, limits)
     print(len(visited))
     print(len(new_obstacles))
