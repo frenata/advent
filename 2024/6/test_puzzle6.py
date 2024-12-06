@@ -9,4 +9,4 @@ def test_visited():
 
 def test_loops():
     _, new_obstacles = sut.simulate(*sut.parse_map("6/example.txt"))
-    assert new_obstacles == 6
+    assert len(new_obstacles) == 6

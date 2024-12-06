@@ -2,6 +2,7 @@ import sys
 import functools
 import collections
 
+
 def parse_map(filename):
     with open(filename) as f:
         start = None
@@ -9,20 +10,22 @@ def parse_map(filename):
         for i, line in enumerate(f):
             for j, symbol in enumerate(line[:-1]):
                 if symbol == "^":
-                    start = (i,j)
+                    start = (i, j)
                 elif symbol == "#":
-                    obstacles.add((i,j))
-        return start, obstacles, (i,j)
+                    obstacles.add((i, j))
+        return start, obstacles, (i, j)
+
 
 def pivot(dir):
-    return {(-1,0): (0,1), (0,1): (1,0), (1,0): (0,-1), (0,-1): (-1,0)}[dir]
+    return {(-1, 0): (0, 1), (0, 1): (1, 0), (1, 0): (0, -1), (0, -1): (-1, 0)}[dir]
+
 
 def advance(pos, dir, obstacles):
     forward = pos[0] + dir[0], pos[1] + dir[1]
     if forward not in obstacles:
         return forward, dir
     else:
-        print("hit obstacle!", pos, dir)
+        # print("hit obstacle!", pos, dir)
         dir = pivot(dir)
         return (pos[0] + dir[0], pos[1] + dir[1]), dir
 
@@ -32,16 +35,15 @@ def simulate(start, obstacles, limits):
     visited = collections.defaultdict(set)
 
     def oob(pos):
-        #print("pos", pos)
-        x,y = pos
+        x, y = pos
         xl, yl = limits
         return x < 0 or y < 0 or x > xl or y > yl
 
     def will_intersect(_pos, _dir):
         while not oob(_pos) and _pos not in obstacles:
-            print("check if will intersect", _pos)
+            # print("check if will intersect", _pos)
             if _dir in visited[_pos]:
-                print("yes will intersect")
+                # print("yes will intersect")
                 return True
             _pos = (_pos[0] + _dir[0], _pos[1] + _dir[1])
 
@@ -54,11 +56,10 @@ def simulate(start, obstacles, limits):
         if pivot(direction) in visited[pos] or will_intersect(pos, pivot(direction)):
             new_obs.add((pos[0] + direction[0], pos[1] + direction[1]))
 
-        print(pos, direction)
         visited[pos].add(direction)
         pos, direction = advance(pos, direction, obstacles)
 
-    return visited, new_obs
+    return {k: v for k, v in visited.items() if v}, new_obs
 
 
 if __name__ == "__main__":
