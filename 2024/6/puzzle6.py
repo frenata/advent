@@ -40,9 +40,9 @@ def simulate(start, obstacles, limits):
         return x < 0 or y < 0 or x > xl or y > yl
 
     def will_intersect(_pos, _dir):
-        local_visted = set()
-        while not oob(_pos) and _pos not in local_visted:
-            local_visted.add(_pos)
+        local_visted = collections.defaultdict(set)
+        while not oob(_pos) and _dir not in local_visted[_pos]:
+            local_visted[_pos].add(_dir)
             # print("check if will intersect", _pos)
             if _dir in visited[_pos]:
                 # print("yes will intersect")
