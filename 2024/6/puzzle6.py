@@ -28,7 +28,7 @@ def advance(pos, dir, obstacles):
 
 
 def simulate(start, obstacles, limits):
-    new_obs = 0
+    new_obs = set()
     visited = collections.defaultdict(set)
 
     def oob(pos):
@@ -37,13 +37,24 @@ def simulate(start, obstacles, limits):
         xl, yl = limits
         return x < 0 or y < 0 or x > xl or y > yl
 
+    def will_intersect(_pos, _dir):
+        while not oob(_pos) and _pos not in obstacles:
+            print("check if will intersect", _pos)
+            if _dir in visited[_pos]:
+                print("yes will intersect")
+                return True
+            _pos = (_pos[0] + _dir[0], _pos[1] + _dir[1])
+
+        return False
+
     pos = start
     direction = (-1, 0)
-    
-    while not oob(pos):
-        if pivot(direction) in visited[pos]:
-            new_obs += 1
 
+    while not oob(pos):
+        if pivot(direction) in visited[pos] or will_intersect(pos, pivot(direction)):
+            new_obs.add((pos[0] + direction[0], pos[1] + direction[1]))
+
+        print(pos, direction)
         visited[pos].add(direction)
         pos, direction = advance(pos, direction, obstacles)
 
@@ -55,4 +66,4 @@ if __name__ == "__main__":
     print(start, obstacles, limits)
     visited, new_obstacles = simulate(start, obstacles, limits)
     print(len(visited))
-    print(new_obstacles)
+    print(len(new_obstacles))
