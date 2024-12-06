@@ -40,12 +40,14 @@ def simulate(start, obstacles, limits):
         return x < 0 or y < 0 or x > xl or y > yl
 
     def will_intersect(_pos, _dir):
-        while not oob(_pos) and _pos not in obstacles:
+        local_visted = set()
+        while not oob(_pos) and _pos not in local_visted:
+            local_visted.add(_pos)
             # print("check if will intersect", _pos)
             if _dir in visited[_pos]:
                 # print("yes will intersect")
                 return True
-            _pos = (_pos[0] + _dir[0], _pos[1] + _dir[1])
+            _pos, _dir = advance(_pos, _dir, obstacles)
 
         return False
 
@@ -64,7 +66,7 @@ def simulate(start, obstacles, limits):
 
 if __name__ == "__main__":
     start, obstacles, limits = parse_map(sys.argv[1])
-    print(start, obstacles, limits)
+    #print(start, obstacles, limits)
     visited, new_obstacles = simulate(start, obstacles, limits)
     print(len(visited))
     print(len(new_obstacles))
