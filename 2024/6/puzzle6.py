@@ -44,10 +44,10 @@ def simulate(start, obstacles, limits):
         local_visited = collections.defaultdict(set)
         while not oob(_pos) and _dir not in local_visited[_pos]:
             if _dir in visited[_pos] or _dir in local_visited[_pos]:
-                # print("yes will intersect")
+                print(f"Loop detected at {_pos} with direction {_dir}")
                 return True
             local_visited[_pos].add(_dir)
-            # print("check if will intersect", _pos)
+            print(f"Checking position {_pos} with direction {_dir}")
             _pos, _dir = advance(_pos, _dir, obstacles)
 
         return False
