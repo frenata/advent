@@ -13,7 +13,6 @@ def parse_map(filename):
                     start = (i, j)
                 elif symbol == "#":
                     obstacles.add((i, j))
-        print(f"Start: {start}, Obstacles: {obstacles}, Limits: {(i, j)}")
         return start, obstacles, (i, j)
 
 
@@ -40,30 +39,26 @@ def simulate(start, obstacles, limits):
         xl, yl = limits
         return x < 0 or y < 0 or x > xl or y > yl
 
-    def will_intersect(_pos, _dir):
+    def will_intersect(_pos, _dir, _obs):
         local_visited = collections.defaultdict(set)
-        while not oob(_pos) and _dir not in local_visited[_pos]:
-            if _dir in visited[_pos] or _dir in local_visited[_pos]:
-                print(f"Loop detected at {_pos} with direction {_dir}")
-                return True
+        while not oob(_pos) and _dir not in local_visited[_pos] and _dir not in visited[_pos]:
             local_visited[_pos].add(_dir)
-            print(f"Checking position {_pos} with direction {_dir}")
-            _pos, _dir = advance(_pos, _dir, obstacles)
+            #print(f"Checking position {_pos} with direction {_dir}")
+            _pos, _dir = advance(_pos, _dir, obstacles.union(set(_obs)))
 
-        # Check if the robot revisits any position with the same direction
-        for pos, dirs in visited.items():
-            if _dir in dirs and pos == _pos:
-                print(f"Loop detected at {_pos} with direction {_dir}")
-                return True
-
-        return False
+        if oob(_pos):
+            return False
+        else:
+            print(f"YYY Loop detected at {_pos} with direction {_dir}")
+            return True
+        #return not oob(_pos)
 
     pos = start
     direction = (-1, 0)
 
     while not oob(pos):
-        print(f"Current Position: {pos}, Direction: {direction}")
-        if pivot(direction) in visited[pos] or will_intersect(pos, pivot(direction)):
+        #print(f"Current Position: {pos}, Direction: {direction}")
+        if pivot(direction) in visited[pos] or will_intersect(pos, pivot(direction), (pos[0] + direction[0], pos[1] + direction[1])):
             new_obs.add((pos[0] + direction[0], pos[1] + direction[1]))
 
         visited[pos].add(direction)
