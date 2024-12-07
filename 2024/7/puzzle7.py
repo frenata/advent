@@ -15,25 +15,25 @@ def _parse(filename):
     return equations
 
 
-def _is_valid(equation):
+def _is_valid(ops, equation):
     total, nums = equation
     if len(nums) == 1:
         return total == nums[0]
 
-    for op in [operator.mul, operator.add]:
-        if _is_valid((total, [op(nums[0], nums[1])] + nums[2:])):
+    for op in ops:
+        if _is_valid(ops, (total, [op(nums[0], nums[1])] + nums[2:])):
             return True
 
     return False
 
 
-def calibrate(filename):
+def calibrate(filename, ops):
     equations = _parse(filename)
     # return _is_valid(*equations.items()[0])
-    valid = list(filter(_is_valid, equations.items()))
+    valid = list(filter(functools.partial(_is_valid, ops), equations.items()))
     # print(list(valid))
     return functools.reduce(lambda total, eq: total + eq[0], valid, 0)
 
 
 if __name__ == "__main__":
-    print(calibrate(sys.argv[1]))
+    print(calibrate(sys.argv[1], [operator.add, operator.mul]))
