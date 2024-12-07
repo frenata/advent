@@ -4,6 +4,10 @@ import functools
 import collections
 
 
+def concat(x, y):
+    return int(str(x) + str(y))
+
+
 def _parse(filename):
     equations = {}
     with open(filename) as f:
@@ -37,3 +41,4 @@ def calibrate(filename, ops):
 
 if __name__ == "__main__":
     print(calibrate(sys.argv[1], [operator.add, operator.mul]))
+    print(calibrate(sys.argv[1], [operator.add, operator.mul, concat]))
