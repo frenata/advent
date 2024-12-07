@@ -50,6 +50,12 @@ def simulate(start, obstacles, limits):
             print(f"Checking position {_pos} with direction {_dir}")
             _pos, _dir = advance(_pos, _dir, obstacles)
 
+        # Check if the robot revisits any position with the same direction
+        for pos, dirs in visited.items():
+            if _dir in dirs and pos == _pos:
+                print(f"Loop detected at {_pos} with direction {_dir}")
+                return True
+
         return False
 
     pos = start
