@@ -13,6 +13,7 @@ def parse_map(filename):
                     start = (i, j)
                 elif symbol == "#":
                     obstacles.add((i, j))
+        print(f"Start: {start}, Obstacles: {obstacles}, Limits: {(i, j)}")
         return start, obstacles, (i, j)
 
 
@@ -55,6 +56,7 @@ def simulate(start, obstacles, limits):
     direction = (-1, 0)
 
     while not oob(pos):
+        print(f"Current Position: {pos}, Direction: {direction}")
         if pivot(direction) in visited[pos] or will_intersect(pos, pivot(direction)):
             new_obs.add((pos[0] + direction[0], pos[1] + direction[1]))
 
