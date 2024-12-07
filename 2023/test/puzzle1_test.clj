@@ -6,3 +6,6 @@
 
 (deftest test-sum
   (is (= 142 (sut/sum-valid "data/1/example.txt"))))
+
+(deftest test-sum-natural
+  (is (= 281 (sut/sum-valid "data/1/example2.txt"))))
