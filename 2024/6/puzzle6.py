@@ -41,25 +41,34 @@ def simulate(start, obstacles, limits):
 
     def will_intersect(_pos, _dir, _obs):
         local_visited = collections.defaultdict(set)
-        while not oob(_pos) and _dir not in local_visited[_pos] and _dir not in visited[_pos]:
+        _obstacles = obstacles.union(set(_obs))
+        while not (oob(_pos) or _dir in local_visited[_pos] or _dir in visited[_pos]): # and _dir not in visited[_pos]:
             local_visited[_pos].add(_dir)
             #print(f"Checking position {_pos} with direction {_dir}")
-            _pos, _dir = advance(_pos, _dir, obstacles.union(set(_obs)))
+            _pos, _dir = advance(_pos, _dir, _obstacles)
 
         if oob(_pos):
             return False
         else:
-            print(f"YYY Loop detected at {_pos} with direction {_dir}")
-            return True
-        #return not oob(_pos)
+            return True, f"YYY projected loop @ {_pos} with direction {_dir}"
+
+        raise ValueError("should not occur")
 
     pos = start
     direction = (-1, 0)
 
     while not oob(pos):
         #print(f"Current Position: {pos}, Direction: {direction}")
-        if pivot(direction) in visited[pos] or will_intersect(pos, pivot(direction), (pos[0] + direction[0], pos[1] + direction[1])):
-            new_obs.add((pos[0] + direction[0], pos[1] + direction[1]))
+        next = (pos[0] + direction[0], pos[1] + direction[1])
+        if next in new_obs:
+            pass
+            #elif pivot(direction) in visited[pos]:
+            #print(f"ZZZ pivoting loops @ {pos} with direction {direction} obs @ {next}")
+            #new_obs.add(next)
+        elif out := will_intersect(pos, pivot(direction), next):
+            _, msg = out
+            print(msg + f" obs @ {next}")
+            new_obs.add(next)
 
         visited[pos].add(direction)
         pos, direction = advance(pos, direction, obstacles)
@@ -73,3 +82,4 @@ if __name__ == "__main__":
     visited, new_obstacles = simulate(start, obstacles, limits)
     print(len(visited))
     print(len(new_obstacles))
+    #print(new_obstacles)
