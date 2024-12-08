@@ -34,21 +34,27 @@ def _pairs(nodes):
 
     return functools.reduce(lambda xs, x: xs.union(x), pairs.values(), set())
 
-def _make_anti_pair(pair):
+def _make_anti_pair(pair, limit):
     p0, p1 = pair
     x0, x1 = p0
     y0, y1 = p1
 
+    antinodes = []
     diff0, diff1 = (x0-y0, x1-y1)
-    return ((x0+diff0, x1+diff1), (y0-diff0, y1-diff1))
+    for mult in limit:
+        antinodes.append((x0+diff0*mult, x1+diff1*mult))
+        antinodes.append((y0-diff0*mult, y1-diff1*mult))
+
+    return antinodes
 
 
-def count_antinodes(filename):
+def count_antinodes(filename, limit):
     nodes, limits = _parse(filename)
     pairs = _pairs(nodes)
-    anti_pairs = [anti for pair in pairs if (anti := _make_anti_pair(pair))]
+    anti_pairs = [anti for pair in pairs if (anti := _make_anti_pair(pair, limit))]
     anti_pairs = {anti for pairs in anti_pairs for anti in pairs if not oob(anti, limits)}
     return len(anti_pairs)
 
 if __name__ == "__main__":
-    print(count_antinodes(sys.argv[1]))
+    print(count_antinodes(sys.argv[1], range(1,2)))
+    print(count_antinodes(sys.argv[1], range(0,99)))

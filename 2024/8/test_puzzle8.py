@@ -1,17 +1,11 @@
-import puzzle7 as sut
-import operator
+import puzzle8 as sut
 
 
-def test_calibration():
-    actual = sut.calibrate("7/example.txt", [operator.add, operator.mul])
-    assert actual == 3749
+def test_count_antinodes():
+    actual = sut.count_antinodes("8/example.txt", range(1,2))
+    assert actual == 14
 
 
-def test_calibration_with_concat():
-    actual = sut.calibrate("7/example.txt", [operator.add, operator.mul, sut.concat])
-    assert actual == 11387
-
-
-def test_concat():
-    actual = sut.concat(5, 16)
-    assert actual == 516
+def test_count_antinodes_repeat():
+    actual = sut.count_antinodes("8/example.txt", range(0,99))
+    assert actual == 34
