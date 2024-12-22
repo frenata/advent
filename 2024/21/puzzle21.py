@@ -95,6 +95,8 @@ def _mk_graph(nodes, adjs):
 keypad = _mk_graph("A0123456789", key_adjs)
 directions = _mk_graph("A<^v>", dir_adjs)
 
+import itertools
+
 def expand(steps, depth_limit=10):
     commands = [""]
 
@@ -102,9 +104,9 @@ def expand(steps, depth_limit=10):
         if len(commands[0]) >= depth_limit:
             break
         if len(step) > 0:
-            commands = [command+option+"A" for command in commands for option in step]
+            commands = [command + option + "A" for command, option in itertools.product(commands, step)]
         else:
-            commands = [command+"A" for command in commands]
+            commands = [command + "A" for command in commands]
 
     return commands
 
