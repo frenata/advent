@@ -1,3 +1,4 @@
+import functools
 import sys
 import igraph as ig
 from dijkstar import Graph, find_path
@@ -133,12 +134,15 @@ def second(targets, pos="A"):
     # breakpoint()
     return [option for option in options if len(option) == min_]
 
-def press_code(target):
+def press_code(target, iters):
+    fst = first(target)
+    return functools.reduce(lambda xs, x: second(xs), [None]*(iters-1), fst)
+
     return second(second(first(target)))
 
-def complexity(target):
+def complexity(target, iters):
     prefix = int(re.match("\d+", target)[0]) 
-    controls = press_code(target)
+    controls = press_code(target, iters)
     # breakpoint()
     control = min(controls, key=min)
     print(prefix,len(control))
@@ -155,5 +159,8 @@ def _parse(filename):
 
 if __name__ == "__main__":
     codes = _parse(sys.argv[1])
-    print(list(complexity(code) for code in codes))
-    print(sum(complexity(code) for code in codes))
+    print(list(complexity(code, 3) for code in codes))
+    print(sum(complexity(code, 3) for code in codes))
+
+    print(list(complexity(code, 25) for code in codes))
+    print(sum(complexity(code, 25) for code in codes))
