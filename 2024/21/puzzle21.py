@@ -117,6 +117,8 @@ def expand(steps):
                     new_commands.append(new_command)
                     if min_length is None or len(new_command) < min_length:
                         min_length = len(new_command)
+        if not new_commands:
+            new_commands = [command + "A"]
         commands = new_commands
 
     return commands
