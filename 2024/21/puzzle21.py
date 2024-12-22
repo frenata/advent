@@ -99,12 +99,25 @@ import itertools
 
 def expand(steps):
     commands = [""]
+    min_length = None
 
     for step in steps:
-        if len(step) > 0:
-            commands = [command + option + "A" for command, option in itertools.product(commands, step)]
-        else:
-            commands = [command + "A" for command in commands]
+        new_commands = []
+        for command in commands:
+            if len(step) > 0:
+                for option in step:
+                    new_command = command + option + "A"
+                    if min_length is None or len(new_command) <= min_length:
+                        new_commands.append(new_command)
+                        if min_length is None or len(new_command) < min_length:
+                            min_length = len(new_command)
+            else:
+                new_command = command + "A"
+                if min_length is None or len(new_command) <= min_length:
+                    new_commands.append(new_command)
+                    if min_length is None or len(new_command) < min_length:
+                        min_length = len(new_command)
+        commands = new_commands
 
     return commands
 
