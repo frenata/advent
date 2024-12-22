@@ -97,12 +97,10 @@ directions = _mk_graph("A<^v>", dir_adjs)
 
 import itertools
 
-def expand(steps, depth_limit=10):
+def expand(steps):
     commands = [""]
 
     for step in steps:
-        if len(commands[0]) >= depth_limit:
-            break
         if len(step) > 0:
             commands = [command + option + "A" for command, option in itertools.product(commands, step)]
         else:
