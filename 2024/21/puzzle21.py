@@ -162,5 +162,5 @@ if __name__ == "__main__":
     print(list(complexity(code, 3) for code in codes))
     print(sum(complexity(code, 3) for code in codes))
 
-    print(list(complexity(code, 25) for code in codes))
-    print(sum(complexity(code, 25) for code in codes))
+    #print(list(complexity(code, 25) for code in codes))
+    #print(sum(complexity(code, 25) for code in codes))
