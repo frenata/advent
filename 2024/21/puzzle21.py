@@ -155,7 +155,7 @@ def press_code(target, iters):
     return second(second(first(target)))
 
 def complexity(target, iters):
-    prefix = int(re.match("\d+", target)[0]) 
+    prefix = int(re.match(r"\d+", target)[0]) 
     controls = press_code(target, iters)
     # breakpoint()
     control = min(controls, key=min)
