@@ -1,56 +1,64 @@
 import sys
+import igraph as ig
 from dijkstar import Graph, find_path
 import collections
 
 import re
 
-def _mk_graph():
-# +---+---+---+
-# | 7 | 8 | 9 |
-# +---+---+---+
-# | 4 | 5 | 6 |
-# +---+---+---+
-# | 1 | 2 | 3 |
-# +---+---+---+
-#     | 0 | A |
-#     +---+---+
+
+def vpaths_to_epath_dirs(gr, vpaths):
+    epaths = []
+    for path in vpaths:
+        epath = "" 
+        for i, v in enumerate(path[:-1]):
+            pos = gr.vs[v]
+            target_i = path[i+1]
+            for edge in pos.out_edges():
+                if edge.target == target_i:
+                    epath += edge["dir"]
+        epaths.append(epath)
+    return epaths
 
 
-    adjs = [
-        ["A", "0", "<"], ["A", "3", "^"],
-        ["0", "A", ">"], ["0", "2", "^"],
+key_adjs = [
+    # +---+---+---+
+    # | 7 | 8 | 9 |
+    # +---+---+---+
+    # | 4 | 5 | 6 |
+    # +---+---+---+
+    # | 1 | 2 | 3 |
+    # +---+---+---+
+    #     | 0 | A |
+    #     +---+---+
+    ["A", "0", "<"], ["A", "3", "^"],
+    ["0", "A", ">"], ["0", "2", "^"],
 
-        ["1", "2", ">"], ["1", "4", "^"],
-        ["2", "1", "<"], ["2", "0", "v"], ["2", "3", ">"], ["2", "5", "^"],
-        ["3", "2", "<"], ["3", "A", "v"], ["3", "6", "^"],
+    ["1", "2", ">"], ["1", "4", "^"],
+    ["2", "1", "<"], ["2", "0", "v"], ["2", "3", ">"], ["2", "5", "^"],
+    ["3", "2", "<"], ["3", "A", "v"], ["3", "6", "^"],
 
-        ["4", "1", "v"], ["4", "5", ">"], ["4", "7", "^"],
-        ["5", "4", "<"], ["5", "2", "v"], ["5", "6", ">"], ["5", "8", "^"],
-        ["6", "5", "<"], ["6", "3", "v"], ["6", "9", "^"],
+    ["4", "1", "v"], ["4", "5", ">"], ["4", "7", "^"],
+    ["5", "4", "<"], ["5", "2", "v"], ["5", "6", ">"], ["5", "8", "^"],
+    ["6", "5", "<"], ["6", "3", "v"], ["6", "9", "^"],
 
-        ["7", "4", "v"], ["7", "8", ">"], 
-        ["8", "7", "<"], ["8", "5", "v"], ["8", "9", ">"],
-        ["9", "8", "<"], ["9", "6", "v"], 
-    ]
+    ["7", "4", "v"], ["7", "8", ">"], 
+    ["8", "7", "<"], ["8", "5", "v"], ["8", "9", ">"],
+    ["9", "8", "<"], ["9", "6", "v"], 
+]
 
-    def _no_cost(a,b,c,d):
-        return 0
+dir_adjs = [
+    #     +---+---+
+    #     | ^ | A |
+    # +---+---+---+
+    # | < | v | > |
+    # +---+---+---+
+            ["^", "A", ">"], ["^","v","v"],
+            ["A", "^", "<"], ["A",">","v"],
+            ["<", "v", ">"],
+            ["v", "<", "<"], ["v",">",">"], ["v", "^", "^"],
+            [">", "A", "^"], [">","v","<"],
 
-    graph = Graph()
-    for adj in adjs:
-        graph.add_edge(*adj)
-
-    nodes = "A0123456789"
-
-    keypad = collections.defaultdict(dict)
-    for node in nodes:
-        for node2 in nodes:
-            if node != node2:
-                keypad[node][node2] = "".join(find_path(graph, node, node2, cost_func=_no_cost).edges)
-
-    return keypad
-
-keypad = _mk_graph()
+]
 
 directions = {
     "A": {"^": "<", ">": "v", "v": "<v", "<": "v<<", "A": ""},
@@ -60,33 +68,80 @@ directions = {
     "v": {"^": "^", ">": ">", "v": "", "<": "<", "A": "^>"},
 }
 
+
+def _mk_graph(nodes, adjs):
+
+    graph = ig.Graph()
+    graph.to_directed()
+
+    graph.add_vertices(list(nodes))
+    for s,t,dir in adjs:
+        graph.add_edge(s,t, dir=dir)
+
+    keypad = collections.defaultdict(dict)
+    for node in nodes:
+        keypad[node] = collections.defaultdict(list)
+
+    for node in nodes:
+        for node2 in nodes:
+            if node != node2:
+                paths = graph.get_all_shortest_paths(node, node2)
+                commands = vpaths_to_epath_dirs(graph, paths)
+                keypad[node][node2] = commands
+
+    return keypad
+
+keypad = _mk_graph("A0123456789", key_adjs)
+directions = _mk_graph("A<^v>", dir_adjs)
+
+def expand(steps):
+    commands = [""]
+
+    for step in steps:
+        # breakpoint()
+        if len(step) > 0:
+            commands = [command+option+"A" for command in commands for option in step]
+        else:
+            commands = [command+"A" for command in commands]
+
+    return commands
+
+
 def first(target, pos="A"):
     keys = []
     for key in target:
         keys.append(keypad[pos][key])
         pos = key
 
-    return "A".join(keys)+"A"
+    return expand(keys)
 
-def second(target, pos="A"):
-    keys = []
-    for key in target:
-        try:
-            keys.append(directions[pos][key])
-        except:
-            breakpoint()
-            pass
-        pos = key
+def second(targets, pos="A"):
+    out = []
+    for target in targets:
+        keys = []
+        for key in target:
+            try:
+                keys.append(directions[pos][key])
+            except Exception as e:
+                breakpoint()
+                pass
+            pos = key
+        out.append(expand(keys))
 
-    return "A".join(keys)+"A"
+    options = [item for sublist in out for item in sublist]
+    min_ = len(min(options, key=len))
+    # breakpoint()
+    return [option for option in options if len(option) == min_]
 
 def press_code(target):
     return second(second(first(target)))
 
 def complexity(target):
     prefix = int(re.match("\d+", target)[0]) 
-    control =press_code(target)
-    print(prefix,control)
+    controls = press_code(target)
+    # breakpoint()
+    control = min(controls, key=min)
+    print(prefix,len(control))
     return prefix * len(control)
 
 
@@ -101,3 +156,4 @@ def _parse(filename):
 if __name__ == "__main__":
     codes = _parse(sys.argv[1])
     print(list(complexity(code) for code in codes))
+    print(sum(complexity(code) for code in codes))
