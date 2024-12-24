@@ -30,25 +30,17 @@ def resolve(wires, gates):
     new_gates = []
     for gate in gates:
         ins = [wires[inp] if inp in wires else None for inp in gate.inputs]
-        if gate.gate == "AND":
-            if None in ins:
-                new_gates.append(gate)
-                continue
-            else:
-                # resolve the gate
-                wires[gate.out] = ins[0] & ins[1]
+        if None in ins:
+            new_gates.append(gate)
+            continue
+
+        elif gate.gate == "AND":
+            # resolve the gate
+            wires[gate.out] = ins[0] & ins[1]
         elif gate.gate == "OR":
-            if True not in ins and False not in ins:
-                new_gates.append(gate)
-                continue
-            else:
-                wires[gate.out] = int(any(ins))
+            wires[gate.out] = int(any(ins))
         elif gate.gate == "XOR":
-            if None in ins:
-                new_gates.append(gate)
-                continue
-            else:
-                wires[gate.out] = ins[0] ^ ins[1]
+            wires[gate.out] = ins[0] ^ ins[1]
         else:
             raise ValueError("unexpected gate type")
 
