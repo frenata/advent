@@ -8,13 +8,18 @@
   (let [[start stop] (str/split rnge #"-")]
     (range (Long/parseLong (str/trim start)) (inc (Long/parseLong (str/trim stop))))))
 
-(defn invalid? [id]
+(defn twice? [id]
   (let [id (str id)
         half (/ (count id) 2)]
     (= (take half id) (drop half id))))
 
+(defn at-least-twice? [id]
+  false)
+
 (defn -main 
-  [filename]
+  ([filename]
+   (-main filename twice?))
+  ([filename invalid?]
    (with-open [rdr (io/reader filename)]
      (->> rdr
           slurp
@@ -23,4 +28,4 @@
           (apply concat)
           (filter invalid?)
           (reduce +)
-          (util/spy>> "output:"))))
+          (util/spy>> "output:")))))
