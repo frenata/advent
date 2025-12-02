@@ -6,10 +6,12 @@
 
 (defn parse [rnge]
   (let [[start stop] (str/split rnge #"-")]
-    [(Integer/parseInt (str/trim start)) (Integer/parseInt (str/trim stop))]
-    )
+    (range (Long/parseLong (str/trim start)) (inc (Long/parseLong (str/trim stop))))))
 
-  )
+(defn invalid? [id]
+  (let [id (str id)
+        half (/ (count id) 2)]
+    (= (take half id) (drop half id))))
 
 (defn -main 
   [filename]
@@ -18,5 +20,7 @@
           slurp
           (#(str/split % #","))
           (mapv parse)
-          (util/spy>> "output:")
-          )))
+          (apply concat)
+          (filter invalid?)
+          (reduce +)
+          (util/spy>> "output:"))))
