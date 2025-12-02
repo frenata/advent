@@ -1,0 +1,8 @@
+test num:
+	clj -X:test :patterns '["advent.{{num}}.*"]'
+
+example num:
+	clj -M -m advent.{{num}}.puzzle data/{{num}}/example.txt
+
+challenge num:
+	clj -M -m advent.{{num}}.puzzle data/{{num}}/challenge.txt
