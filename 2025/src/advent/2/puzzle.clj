@@ -14,11 +14,18 @@
     (= (take half id) (drop half id))))
 
 (defn at-least-twice? [id]
-  false)
+  (let [id (str id)
+        half (/ (count id) 2)]
+    (if (= 1 (count id)) false 
+      (->> (range 1 (inc half))
+           (map (fn [n] (repeat (/ (count id) n) (take n id))))
+           (map (comp (partial apply str) flatten))
+           (filter #(= % id))
+           seq))))
 
 (defn -main 
   ([filename]
-   (-main filename twice?))
+   (-main filename at-least-twice?))
   ([filename invalid?]
    (with-open [rdr (io/reader filename)]
      (->> rdr
