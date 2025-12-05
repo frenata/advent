@@ -31,9 +31,20 @@
         nearby (apply merge-with + (map -find rolls))]
     (filter (fn [[pos _]] (contains? rolls pos)) nearby)))
 
-(defn -main 
+(defn remove-adjacent [size rolls]
+  (loop [rolls   rolls
+         removed 0]
+    (let [removeable (into {} (filter (fn [[_ n]] (< n 4)) (find-adjacent size rolls)))
+          n          (count removeable)]
+      (if (= 0 n)
+        removed
+        (recur
+          (into {} (remove (fn [[r _]] (contains? removeable r)) rolls))
+          (+ removed n))))))
+
+(defn -star1-main 
   ([filename]
-   (-main filename 140))
+   (-star1-main filename 140))
   ([filename size]
    (with-open [rdr (io/reader filename)]
      (->> rdr
@@ -42,4 +53,15 @@
           (find-adjacent size)
           (filter (fn [[pos n]] (< n 4)))
           count
+          (util/spy>> "output:")))))
+
+(defn -main 
+  ([filename]
+   (-main filename 140))
+  ([filename size]
+   (with-open [rdr (io/reader filename)]
+     (->> rdr
+          line-seq
+          parse
+          (remove-adjacent size)
           (util/spy>> "output:")))))
