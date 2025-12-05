@@ -16,50 +16,30 @@
        (apply merge)))
 
 (defn find-adjacent [size rolls]
-  (let [-find 
-        (fn 
-          [[[x y] _]]
-          (let [adjs 
-                [
-                 [(inc x) (inc y)]
-                 [(inc x) (dec y)]
-                 [(inc x)      y ]
-                 [(dec x) (inc y)]
-                 [(dec x) (dec y)]
-                 [(dec x)      y ]
-                 [x       (inc y)]
-                 [x       (dec y)]
-                 ]]
-            adjs
-            #_(filter (fn [[x y]] 
-                      (not (or (> x size) (> y size)
-                               (< x 0) (< y 0)))) adjs)
-            ))
+  (let [-find (fn 
+                [[[x y] _]]
+                {[(inc x) (inc y)] 1
+                 [(inc x) (dec y)] 1
+                 [(inc x)      y ] 1
+                 [(dec x) (inc y)] 1
+                 [(dec x) (dec y)] 1
+                 [(dec x)      y ] 1
+                 [x       (inc y)] 1
+                 [x       (dec y)] 1
+                 [x            y ] 0})
 
-    nearby (mapcat -find rolls)
-        ]
-    ; (println rolls nearby)
-    (filter (fn [pos] (contains? rolls pos)) nearby)))
+        nearby (apply merge-with + (map -find rolls))]
+    (filter (fn [[pos _]] (contains? rolls pos)) nearby)))
 
 (defn -main 
   ([filename]
    (-main filename 140))
   ([filename size]
-  (with-open [rdr (io/reader filename)]
-    (->> rdr
-         line-seq
-         parse
-         ; (util/spy>> "rolls:")
-         ; (map (partial find-adjacent size))
-         (find-adjacent size)
-         ; (util/spy>> "before concat")
-         ; (apply concat)
-         ; sort
-         ; (util/spy>> "before freq")
-         frequencies
-         ; sort
-         ; (util/spy>> "nears:")
-         (filter (fn [[pos n]] (< n 4)))
-         ; (util/spy>> "moveable:")
-         count
-         (util/spy>> "output:")))))
+   (with-open [rdr (io/reader filename)]
+     (->> rdr
+          line-seq
+          parse
+          (find-adjacent size)
+          (filter (fn [[pos n]] (< n 4)))
+          count
+          (util/spy>> "output:")))))
