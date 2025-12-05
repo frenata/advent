@@ -4,4 +4,4 @@
     [clojure.test :refer :all]))
 
 (deftest test-star1
-    (is (= 13 (sut/-main "data/4/example.txt"))))
+    (is (= 13 (sut/-main "data/4/example.txt" 10))))
