@@ -62,6 +62,7 @@
    (with-open [rdr (io/reader filename)]
      (->> rdr
           line-seq
+          util/start-timer!
           parse
           (remove-adjacent size)
-          (util/spy>> "output:")))))
+          (util/spy-timer! "output:")))))
