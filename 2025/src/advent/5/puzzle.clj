@@ -11,7 +11,17 @@
        (#(str/split % #"\n"))
        (map #(str/split % #"-"))
        (map (partial map Long/parseLong))
-       (map (fn [[start stop]] (range start (inc stop))))))
+       #_(map (fn [[start stop]] (range start (inc stop))))
+       (map (fn [[start stop]] 
+              (fn [ingredient] 
+                (let [fresh (and (>= ingredient start) (<= ingredient stop))]
+                #_(println start stop ingredient fresh) 
+                fresh)
+
+                
+                )
+              )
+       )))
 
 (defn parse-available [as] 
   (->> as
@@ -27,9 +37,7 @@
        )))
 
 (defn find-fresh [[ranges available]]
-  (let [fresh (->> ranges flatten (into #{}))]
-    (filter #(contains? fresh %) available)
-    )
+  (filter (apply some-fn ranges) available)
   )
 
 
