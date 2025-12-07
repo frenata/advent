@@ -4,16 +4,46 @@
     [clojure.string :as str]
     [advent.util :as util]))
 
-#_(defn parse [lines]
-  (->> lines
-       (map-indexed parse-line)
-       (apply merge)))
+
+
+(defn parse-ranges [rs] 
+  (->> rs
+       (#(str/split % #"\n"))
+       (map #(str/split % #"-"))
+       (map (partial map Long/parseLong))
+       (map (fn [[start stop]] (range start (inc stop))))))
+
+(defn parse-available [as] 
+  (->> as
+       (#(str/split % #"\n"))
+       (map Long/parseLong)))
+
+(defn parse [input]
+  (->> input
+       (#(str/split % #"\n\n"))
+       ((fn [[ranges available]] 
+          [(parse-ranges ranges)
+           (parse-available available)])
+       )))
+
+(defn find-fresh [[ranges available]]
+  (let [fresh (->> ranges flatten (into #{}))]
+    (filter #(contains? fresh %) available)
+    )
+  )
+
 
 (defn -main 
   [filename ]
    (with-open [rdr (io/reader filename)]
      (->> rdr
-          line-seq
+          slurp
           util/start-timer!
-          ((constantly 0))
+          parse
+          #_(util/spy>> "parsed")
+          find-fresh
+          #_(util/spy>> "fresh")
+
+          count
+          #_((constantly 0))
           (util/spy-timer! "output:"))))
