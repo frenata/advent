@@ -5,3 +5,6 @@
 
 (deftest test-star1
     (is (= 3 (sut/-main "data/5/example.txt"))))
+
+(deftest test-star2
+    (is (= 14 (sut/-main "data/5/example.txt" 100))))
