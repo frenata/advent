@@ -4,8 +4,7 @@
     [clojure.string :as str]
     [advent.util :as util]))
 
-(def beam (atom #{}))
-(def timelines (atom []))
+(def beam (atom {}))
 (def splits (atom 0))
 
 (defn parse-line [row line]
@@ -13,9 +12,7 @@
        (map-indexed (fn [col pos] [[row col] pos]))
        (filter (fn [[pos val]] 
                  (if (= val \S) 
-                   (do 
-                     (reset! beam #{pos})
-                     (reset! timelines [pos]))) 
+                   (reset! beam {pos 1})) 
                  (= val \^)))
        (into {})))
 
@@ -24,33 +21,33 @@
        (map-indexed parse-line)
        (apply merge)))
 
-(defn move! [manifold count? beam]
-  (let [new-vals 
-        (->> beam
-             (mapcat 
-               (fn [[x y]] 
-                 (let [next [(inc x) y]]
-                   (if (contains? manifold next)
-                     (do (if count? (swap! splits inc))
-                         [[(inc x) (inc y)] [(inc x) (dec y)]])
-                     [next])))))]
-    (if (set? beam)
-      (into #{} new-vals)
-      (into [] new-vals))))
+(defn move! [manifold beam]
+  (->> beam
+       (mapcat 
+         (fn [[[x y] n]] 
+           (let [next [[(inc x) y] n] ]
+             (if (contains? manifold (first next))
+               (do (swap! splits inc)
+                   [[[(inc x) (inc y)] n]  [[(inc x) (dec y)] n] ])
+               [next]))))
+       (reduce (fn [acc [k v]] 
+                 (if (contains? acc k)
+                   (update acc k (partial + v))
+                   (assoc acc k v)))
+               {})))
 
 
 (defn traverse! [manifold]
-  (println "traverse!")
-  (swap! beam      (partial move! manifold true))
-  (swap! timelines (partial move! manifold false)))
+  (swap! beam (partial move! manifold)))
 
 (defn -main 
   [filename]
   (with-open [rdr (io/reader filename)]
-    (let [manifold (->> rdr
-                        line-seq
-                        util/start-timer!
-                        parse)]
+    (let [manifold 
+          (->> rdr
+               line-seq
+               util/start-timer!
+               parse)]
       (doall
         (repeatedly 150 (partial traverse! manifold)))
-      (util/spy-timer! "splits/timelines: " [(deref splits) (count (deref timelines))]))))
+      (util/spy-timer! "splits/timelines: " [(deref splits) (reduce + (vals (into {} (deref beam))))]))))
